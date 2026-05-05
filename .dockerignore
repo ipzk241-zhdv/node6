@@ -1,0 +1,20 @@
+# Залежності
+node_modules/
+
+# Системні файли та логі
+.git/
+.gitignore
+npm-debug.log
+yarn-error.log
+
+# Секрети та конфігурації
+.env
+.env.local
+
+# Артефакти попередніх локальних збірок
+dist/
+build/
+
+# Файли конфігурації Docker (щоб не копіювати їх самі в себе)
+Dockerfile
+.dockerignore

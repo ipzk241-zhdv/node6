@@ -1,0 +1,38 @@
+services:
+  mongo:
+    image: mongo:8
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: supersecretpassword
+      MONGO_INITDB_DATABASE: lab_database
+    volumes:
+      # Named volume для збереження даних бази між перезапусками
+      - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s      # Як часто перевіряти
+      timeout: 5s        # Скільки чекати на відповідь
+      retries: 2         # Скільки спроб до оголошення статусу unhealthy
+      start_period: 10s  # Час на первинний запуск перед початком перевірок
+
+  # Сервіс вашого Express-застосунку
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      MONGODB_URI: mongodb://admin:supersecretpassword@mongo:27017/lab_database?authSource=admin
+    depends_on:
+      mongo:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://127.0.0.1:3000/health', (r) => { process.exit(r.statusCode === 200 ? 0 : 1); }).on('error', () => process.exit(1));"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  mongo-data:
