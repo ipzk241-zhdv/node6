@@ -12,8 +12,6 @@ app.get('/health', (req: Request, res: Response) => {
     // 0 = disconnected, 1 = connected, 2 = connecting, 3 = disconnecting
     const isDbConnected = mongoose.connection.readyState === 1;
 
-    навмисна помилка
-
     if (isDbConnected) {
         res.status(200).json({
             status: 'ok',
