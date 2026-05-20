@@ -1,9 +1,9 @@
-# fly.toml app configuration file generated for node7 on 2026-05-20T16:30:07+03:00
+# fly.toml app configuration file generated for lab6-lustrous-moonrise-9060 on 2026-05-05T15:33:37+03:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'node7'
+app = 'lab6-lustrous-moonrise-9060'
 primary_region = 'fra'
 
 [build]
@@ -15,6 +15,13 @@ primary_region = 'fra'
   auto_start_machines = true
   min_machines_running = 0
   processes = ['app']
+
+[[http_service.checks]]
+  interval = "10s"
+  timeout = "2s"
+  grace_period = "5s"
+  method = "GET"
+  path = "/health"
 
 [[vm]]
   memory = '1gb'

@@ -174,8 +174,12 @@
 <a name='L109'></a><a href='#L109'>109</a>
 <a name='L110'></a><a href='#L110'>110</a>
 <a name='L111'></a><a href='#L111'>111</a>
-<a name='L112'></a><a href='#L112'>112</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<a name='L112'></a><a href='#L112'>112</a>
+<a name='L113'></a><a href='#L113'>113</a>
+<a name='L114'></a><a href='#L114'>114</a>
+<a name='L115'></a><a href='#L115'>115</a>
+<a name='L116'></a><a href='#L116'>116</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -194,12 +198,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">23x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">19x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -239,15 +243,19 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">20x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">16x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">21x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">17x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -269,13 +277,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">9x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">11x</span>
 <span class="cline-any cline-yes">11x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -285,23 +292,23 @@
 <span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span></td><td class="text"><pre class="prettyprint lang-js">import mongoose, { Schema, Document } from 'mongoose';
-import { v4 as uuidv4 } from 'uuid';
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import mongoose, { Schema, Document } from "mongoose";
+import { v4 as uuidv4 } from "uuid";
 &nbsp;
 export interface IRecipe {
-    id: string;     // поле id ще було передбачено в 3 лабі, тому залишаю як є
+    id: string; // поле id ще було передбачено в 3 лабі, тому залишаю як є
     title: string;
     description?: string;
-    difficulty: 'easy' | 'medium' | 'hard';
+    difficulty: "easy" | "medium" | "hard";
     cookingTimeMinutes: number;
     ingredients: string[];
+    ownerId: mongoose.Types.ObjectId | string;
 }
 &nbsp;
-// Додатковий інтерфейс, який поєднує нашу сутність та Mongoose Document
-// Тут ми також описуємо віртуальні властивості та дати
 export interface IRecipeDocument extends IRecipe, Document {
-    isQuickRecipe: boolean;       // Віртуальне поле
-    formattedCookingTime: string; // Віртуальне поле
+    isQuickRecipe: boolean;
+    formattedCookingTime: string;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -312,58 +319,63 @@ const recipeSchema = new Schema&lt;IRecipeDocument&gt;(
             type: String,
             default: () =&gt; uuidv4(),
             unique: true,
-            required: [true, 'Поле id є обовʼязковим']
+            required: [true, "Поле id є обовʼязковим"],
         },
         title: {
             type: String,
-            required: [true, 'Назва обовʼязкова'],
-            minlength: [1, 'Назва не може бути порожньою'],
-            maxlength: [100, 'Назва не може перевищувати 100 символів'],
-            trim: true
+            required: [true, "Назва обовʼязкова"],
+            minlength: [1, "Назва не може бути порожньою"],
+            maxlength: [100, "Назва не може перевищувати 100 символів"],
+            trim: true,
         },
         description: {
             type: String,
-            maxlength: [500, 'Опис не може перевищувати 500 символів'],
-            trim: true
+            maxlength: [500, "Опис не може перевищувати 500 символів"],
+            trim: true,
         },
         difficulty: {
             type: String,
-            required: [true, 'Складність є обовʼязковою'],
+            required: [true, "Складність є обовʼязковою"],
             enum: {
-                values: ['easy', 'medium', 'hard'],
-                message: 'Складність має бути: easy, medium або hard'
-            }
+                values: ["easy", "medium", "hard"],
+                message: "Складність має бути: easy, medium або hard",
+            },
         },
         cookingTimeMinutes: {
             type: Number,
-            required: [true, 'Час приготування є обовʼязковим'],
-            min: [1, 'Час приготування має бути більшим за нуль'],
+            required: [true, "Час приготування є обовʼязковим"],
+            min: [1, "Час приготування має бути більшим за нуль"],
             validate: {
                 // перевірка на ціле число
                 validator: Number.isInteger,
-                message: 'Час приготування має бути цілим числом'
-            }
+                message: "Час приготування має бути цілим числом",
+            },
         },
         ingredients: {
             type: [String],
-            required: [true, 'Масив інгредієнтів є обовʼязковим'],
+            required: [true, "Масив інгредієнтів є обовʼязковим"],
             validate: [
                 {
                     // масив не має бути порожнім
                     validator: function (val: string[]) {
                         return val.length &gt; 0;
                     },
-                    message: 'Рецепт має містити хоча б один інгредієнт'
+                    message: "Рецепт має містити хоча б один інгредієнт",
                 },
                 {
                     // перевірка довжини кожного рядка інгредієнта
                     validator: function (val: string[]) {
-                        return val.every(item =&gt; item.length &gt;= 1 &amp;&amp; item.length &lt;= 100);
+                        return val.every((item) =&gt; item.length &gt;= 1 &amp;&amp; item.length &lt;= 100);
                     },
-                    message: 'Назва кожного інгредієнту має бути від 1 до 100 символів'
-                }
-            ]
-        }
+                    message: "Назва кожного інгредієнту має бути від 1 до 100 символів",
+                },
+            ],
+        },
+        ownerId: {
+            type: Schema.Types.ObjectId,
+            ref: "User",
+            required: [true, "Власник є обовʼязковим"],
+        },
     },
     {
         timestamps: true,
@@ -373,37 +385,37 @@ const recipeSchema = new Schema&lt;IRecipeDocument&gt;(
                 delete ret._id;
                 delete ret.__v;
                 return ret;
-            }
+            },
         },
-        toObject: { virtuals: true }
-    }
+        toObject: { virtuals: true },
+    },
 );
 &nbsp;
-&nbsp;
 // Чи готується рецепт швидко? (&lt;= 30 хв)
-recipeSchema.virtual('isQuickRecipe').get(function (this: IRecipeDocument) {
+recipeSchema.virtual("isQuickRecipe").get(function (this: IRecipeDocument) {
     return this.cookingTimeMinutes &lt;= 30;
 });
 &nbsp;
 // Зручний формат часу ("1 год 20 хв" або "30 хв")
-recipeSchema.virtual('formattedCookingTime').get(function (this: IRecipeDocument) {
+recipeSchema.virtual("formattedCookingTime").get(function (this: IRecipeDocument) {
     const hours = Math.floor(this.cookingTimeMinutes / 60);
     const minutes = this.cookingTimeMinutes % 60;
 &nbsp;
     if (hours &gt; 0) {
-        return `${hours} год ${minutes &gt; 0 ? minutes + ' хв' : ''}`.trim();
+        return `${hours} год ${minutes &gt; 0 ? minutes + " хв" : ""}`.trim();
     }
     return `${minutes} хв`;
 });
 &nbsp;
-export const Recipe = mongoose.model&lt;IRecipeDocument&gt;('Recipe', recipeSchema);</pre></td></tr></table></pre>
+export const Recipe = mongoose.model&lt;IRecipeDocument&gt;("Recipe", recipeSchema);
+&nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-04-09T13:17:19.597Z
+                at 2026-05-20T14:11:34.473Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
